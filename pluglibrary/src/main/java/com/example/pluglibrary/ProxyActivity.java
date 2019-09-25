@@ -66,8 +66,12 @@ public class ProxyActivity extends Activity {
 
     //初始化Plug信息
     private void initPlugInfo() {
-        String packageName = getIntent().getStringExtra(INTENT_PACKAGE_NAME);
-        plugInfo = DPlugManager.getInstance().getDexPlugPackage(packageName);
+        plugInfo = DPlugManager.getInstance().getDexPlugPackage(getMPackageName());
+    }
+
+    //获得包名称
+    private String getMPackageName() {
+        return getIntent().getStringExtra(INTENT_PACKAGE_NAME);
     }
 
 
@@ -83,8 +87,11 @@ public class ProxyActivity extends Activity {
 
     //获得启动的class
     private String getLauncherClass() {
-        String className = getIntent().getStringExtra(INTENT_CLASS_NAME);
-        return TextUtils.isEmpty(className) ? plugInfo.defaultActivity : className;
+        String activityName = getIntent().getStringExtra(INTENT_CLASS_NAME);
+        if (TextUtils.isEmpty(activityName)) {
+            return plugInfo.defaultActivity;
+        }
+        return activityName;
     }
 
     //获得插件包的接口对象

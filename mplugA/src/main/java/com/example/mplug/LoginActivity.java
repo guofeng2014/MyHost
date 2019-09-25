@@ -23,7 +23,7 @@ public class LoginActivity extends BasePlugActivity {
             public void onClick(View view) {
                 DLIntent intent = new DLIntent();
                 intent.setPackageName("com.example.mplug");
-                intent.setmPlugnClass("MainActivity");
+                intent.setmPlugnClass("com.example.mplug.MainActivity");
                 startActivity(intent);
             }
         });
