@@ -4,6 +4,15 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/mMultifily"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="开启多开"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <ListView
         android:id="@+id/mListView"
         android:layout_width="match_parent"

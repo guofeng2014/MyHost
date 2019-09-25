@@ -2,6 +2,7 @@ package com.example.myhost;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -17,10 +18,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.pluglibrary.DPlugManager;
+import com.example.pluglibrary.PlugPackage;
 import com.example.pluglibrary.ProxyActivity;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,6 +58,44 @@ public class MainActivity extends AppCompatActivity {
                 ProxyActivity.jump(MainActivity.this, packageInfo.packageName, defActivity);
             }
         });
+
+        //多开功能
+        findViewById(R.id.mMultifily).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createMulShortCutIcon();
+            }
+        });
+    }
+
+
+    //生成多个图标快捷键
+    private void createMulShortCutIcon() {
+
+        Map<String, PlugPackage> cache = DPlugManager.getInstance().getCache();
+        Iterator<String> iterator = cache.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            PlugPackage plugPackage = cache.get(key);
+            if (plugPackage == null) continue;
+
+            // 安装的Intent
+            Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+            // 快捷名称
+            shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, plugPackage.packageName);
+            // 快捷图标是否允许重复
+            shortcut.putExtra("duplicate", false);
+            Intent shortcutIntent = new Intent(Intent.ACTION_MAIN);
+            shortcutIntent.setClassName(plugPackage.packageName, plugPackage.defaultActivity);
+            shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+
+            Intent.ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.mipmap.ic_short);
+            shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
+            // 发送广播
+            sendBroadcast(shortcut);
+        }
+
     }
 
 
@@ -120,12 +162,20 @@ public class MainActivity extends AppCompatActivity {
     private void requestSdPermission() {
         try {
             //检测是否有写的权限
-            int permission = ActivityCompat.checkSelfPermission(this,
+            int p1 = ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (permission != PackageManager.PERMISSION_GRANTED) {
+            int p2 = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE);
+            int p3 = ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.INSTALL_SHORTCUT);
+
+            if (p1 != PackageManager.PERMISSION_GRANTED
+                    || p2 != PackageManager.PERMISSION_GRANTED
+                    || p3 != PackageManager.PERMISSION_GRANTED
+            ) {
                 // 没有写的权限，去申请写的权限，会弹出对话框
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INSTALL_SHORTCUT}, REQUEST_CODE);
             }
         } catch (Exception e) {
             e.printStackTrace();

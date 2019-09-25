@@ -55,6 +55,12 @@ public class DPlugManager {
     }
 
 
+    //获得所有插件
+    public Map<String, PlugPackage> getCache() {
+        return cache;
+    }
+
+
     //启动跳转到代理Activity
     public void startActivity(Context context, DLIntent intent) {
         ProxyActivity.jump(context, intent.packageName, intent.mPlugnClass);
