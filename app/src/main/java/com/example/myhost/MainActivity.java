@@ -2,6 +2,7 @@ package com.example.myhost;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +15,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import com.example.pluglibrary.DPlugManager;
+import com.example.pluglibrary.ProxyActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         List<String> allApkPath = new FileUtil().getAllApkPath();
-        APKLoadUtil.getInstance().initAllPlugINfo(this,allApkPath);
+        DPlugManager.getInstance().initAllPlugInfo(this, allApkPath);
         ListView mListView = findViewById(R.id.mListView);
         PlugListAdapter adapter = new PlugListAdapter(this);
         mListView.setAdapter(adapter);
@@ -42,7 +46,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String dexPath = (String) adapterView.getItemAtPosition(i);
-                ProxyActivity.jump(MainActivity.this, dexPath);
+                //根据APK文件获得包名称 和 默认Activity类名称
+                PackageInfo packageInfo = DPlugManager.getInstance().getPackageInfo(MainActivity.this, dexPath);
+                if (packageInfo == null) return;
+                String defActivity = DPlugManager.getInstance().getDefaultActivity(packageInfo);
+                //启动代理Activity
+                ProxyActivity.jump(MainActivity.this, packageInfo.packageName, defActivity);
             }
         });
     }

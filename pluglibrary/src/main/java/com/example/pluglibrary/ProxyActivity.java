@@ -1,10 +1,12 @@
-package com.example.myhost;
+package com.example.pluglibrary;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,17 +32,19 @@ import static com.example.pluglibrary.BasePlugActivity.FROM_EXTERN;
 public class ProxyActivity extends Activity {
 
 
-    public static final String INTENT_DEX_PATH = "intent_dex_path";
+    public static final String INTENT_PACKAGE_NAME = "intent_package_name";
+    public static final String INTENT_CLASS_NAME = "intent_class_name";
 
 
     private PlugItf plugItf;//插件包的接口对象
     private PlugPackage plugInfo;//插件封装类
 
 
-    public static void jump(Activity activity, String dexPath) {
-        Intent intent = new Intent(activity, ProxyActivity.class);
-        intent.putExtra(INTENT_DEX_PATH, dexPath);
-        activity.startActivity(intent);
+    public static void jump(Context context, String packageName, String className) {
+        Intent intent = new Intent(context, ProxyActivity.class);
+        intent.putExtra(INTENT_PACKAGE_NAME, packageName);
+        intent.putExtra(INTENT_CLASS_NAME, className);
+        context.startActivity(intent);
     }
 
 
@@ -62,7 +66,8 @@ public class ProxyActivity extends Activity {
 
     //初始化Plug信息
     private void initPlugInfo() {
-        plugInfo = APKLoadUtil.getInstance().getDexPlugPackage(getDexFile());
+        String packageName = getIntent().getStringExtra(INTENT_PACKAGE_NAME);
+        plugInfo = DPlugManager.getInstance().getDexPlugPackage(packageName);
     }
 
 
@@ -76,11 +81,16 @@ public class ProxyActivity extends Activity {
         }
     }
 
+    //获得启动的class
+    private String getLauncherClass() {
+        String className = getIntent().getStringExtra(INTENT_CLASS_NAME);
+        return TextUtils.isEmpty(className) ? plugInfo.defaultActivity : className;
+    }
+
     //获得插件包的接口对象
     private void initPlugItf() {
-        String defActivity = plugInfo.defaultActivity;
         try {
-            Class<?> aClass = plugInfo.classLoader.loadClass(defActivity);
+            Class<?> aClass = plugInfo.classLoader.loadClass(getLauncherClass());
             Constructor<?> localConstructor = aClass.getConstructor(new Class[]{});
             Object object = localConstructor.newInstance();
             if (object instanceof PlugItf) {//拿到插件的接口对象
@@ -94,15 +104,6 @@ public class ProxyActivity extends Activity {
         }
     }
 
-    //获得Dex文件的路径
-    private File getDexFile() {
-        String dexPath = getIntent().getStringExtra(INTENT_DEX_PATH);
-        File file = new File(dexPath);
-        if (!file.exists()) {
-            Toast.makeText(this, "插件解析异常", Toast.LENGTH_SHORT).show();
-        }
-        return file;
-    }
 
     @Override
     protected void onStart() {

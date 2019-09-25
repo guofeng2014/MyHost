@@ -37,6 +37,7 @@
 
 
     <Button
+        android:id="@+id/btn_sure"
         android:text="确定"
         android:layout_marginTop="20dp"
         android:background="#F00"
@@ -44,6 +45,7 @@
         android:layout_height="50dp"/>
 
     <Button
+        android:id="@+id/btn_cancel"
         android:text="取消"
         android:layout_marginTop="20dp"
         android:background="#F0F"

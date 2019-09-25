@@ -1,2 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.pluglibrary" />
+    package="com.example.pluglibrary" >
+
+    <application>
+        <activity android:name=".ProxyActivity" android:screenOrientation="portrait"/>
+    </application>
+</manifest>

@@ -54,9 +54,10 @@ public class BasePlugActivity extends Activity implements PlugItf {
         }
     }
 
+
+    //跳转到Activity
     public void startActivity(DLIntent intent) {
-
-
+        DPlugManager.getInstance().startActivity(that, intent);
     }
 
     @Override

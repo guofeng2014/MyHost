@@ -1,4 +1,4 @@
-package com.example.myhost;
+package com.example.pluglibrary;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,48 +17,56 @@ import dalvik.system.DexClassLoader;
 
 /**
  * create by guofeng
- * date on 2019-09-24
+ * date on 2019-09-25
  */
-public class APKLoadUtil {
-
-    public static APKLoadUtil getInstance() {
-        return instance;
-    }
-
-    private static APKLoadUtil instance = new APKLoadUtil();
-
-    private APKLoadUtil() { }
+public class DPlugManager {
 
     private final Map<String, PlugPackage> cache = new HashMap<>();
 
+    private DPlugManager() {
+    }
 
-    public void initAllPlugINfo(Activity activity, List<String> apkList) {
-        for (String path : apkList) {
-            File apk = new File(path);
-            PlugPackage plugPackage = cache.get(apk.toString());
+    private static DPlugManager instance = new DPlugManager();
+
+    public static DPlugManager getInstance() {
+        return instance;
+    }
+
+
+    //初始化所有插件 转化为PlugPackage封装类
+    public void initAllPlugInfo(Activity activity, List<String> apkList) {
+        for (String apk : apkList) {
+            //package信息
+            PackageInfo packageInfo = getPackageInfo(activity, apk);
+            if (packageInfo == null) continue;
+            //包名称作为key,一个APK就是一个完整的应用 只有唯一的一个包名称
+            PlugPackage plugPackage = cache.get(packageInfo.packageName);
             if (plugPackage == null) {
                 plugPackage = new PlugPackage();
                 plugPackage.classLoader = createDexClassLoader(activity, apk);
                 plugPackage.assetManager = createAssetManager(apk);
-                plugPackage.packageInfo = getPackageInfo(activity, apk);
+                plugPackage.packageInfo = packageInfo;
                 plugPackage.defaultActivity = getDefaultActivity(plugPackage.packageInfo);
-                if (plugPackage.packageInfo != null) {
-                    plugPackage.packageName = plugPackage.packageInfo.packageName;
-                }
+                plugPackage.packageName = plugPackage.packageInfo.packageName;
                 plugPackage.resources = createResource(activity, plugPackage.assetManager);
-                cache.put(apk.toString(), plugPackage);
+                cache.put(packageInfo.packageName, plugPackage);
             }
         }
     }
 
 
-
-    //获得APK的插件信息
-    public PlugPackage getDexPlugPackage(File apk) {
-        return cache.get(apk.toString());
+    //启动跳转到代理Activity
+    public void startActivity(Context context, DLIntent intent) {
+        ProxyActivity.jump(context, intent.packageName, intent.mPlugnClass);
     }
 
-    private String getDefaultActivity(PackageInfo packageInfo) {
+
+    //获得APK的插件信息
+    public PlugPackage getDexPlugPackage(String packageName) {
+        return cache.get(packageName);
+    }
+
+    public String getDefaultActivity(PackageInfo packageInfo) {
         if (packageInfo != null) {
             if (packageInfo.activities != null && packageInfo.activities.length > 0) {
                 return packageInfo.activities[0].name;
@@ -73,11 +81,11 @@ public class APKLoadUtil {
         return resources;
     }
 
-    private AssetManager createAssetManager(File apk) {
+    private AssetManager createAssetManager(String apkPath) {
         try {
             AssetManager assetManager = AssetManager.class.newInstance();
             Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
-            addAssetPath.invoke(assetManager, apk.toString());
+            addAssetPath.invoke(assetManager, apkPath);
             return assetManager;
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,14 +93,14 @@ public class APKLoadUtil {
         }
     }
 
-    private PackageInfo getPackageInfo(Activity activity, File apk) {
+    public PackageInfo getPackageInfo(Activity activity, String apkPath) {
         PackageManager pm = activity.getPackageManager();
-        return pm.getPackageArchiveInfo(apk.toString(), PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES);
+        return pm.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES);
     }
 
-    private DexClassLoader createDexClassLoader(Activity activity, File apk) {
+    private DexClassLoader createDexClassLoader(Activity activity, String apkPath) {
         File dexOutputDir = activity.getDir("dex", Context.MODE_PRIVATE);
-        return new DexClassLoader(apk.toString(), dexOutputDir.toString(), null, activity.getClassLoader());
+        return new DexClassLoader(apkPath, dexOutputDir.toString(), null, activity.getClassLoader());
     }
 
 
