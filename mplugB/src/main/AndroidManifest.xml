@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".PlugActivity"
+            android:name=".PlugLoginBActivity"
             android:screenOrientation="portrait" />
     </application>
 </manifest>

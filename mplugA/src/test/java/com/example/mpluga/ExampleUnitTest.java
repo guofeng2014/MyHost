@@ -1,4 +1,4 @@
-package com.example.mplug;
+package com.example.mpluga;
 
 import org.junit.Test;
 

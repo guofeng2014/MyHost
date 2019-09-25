@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mplug">
+    package="com.example.mpluga">
 
     <application>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.example.mpluga.PlugLoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.mpluga.MainActivity"
             android:screenOrientation="portrait" />
     </application>
 </manifest>
