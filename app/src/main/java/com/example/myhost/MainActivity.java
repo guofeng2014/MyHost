@@ -82,9 +82,8 @@ public class MainActivity extends AppCompatActivity {
             // 安装的Intent
             Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
             // 快捷名称
-            shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, plugPackage.packageName);
+            shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "插件哈哈");
             // 快捷图标是否允许重复
-            shortcut.putExtra("duplicate", false);
             Intent shortcutIntent = new Intent(Intent.ACTION_MAIN);
             shortcutIntent.setClassName(plugPackage.packageName, plugPackage.defaultActivity);
             shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
