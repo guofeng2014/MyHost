@@ -22,9 +22,9 @@ public class PlugLoginActivity extends BasePlugActivity {
             @Override
             public void onClick(View view) {
                 DLIntent intent = new DLIntent();
-                intent.setPackageName("com.example.mplug");
-                intent.setmPlugnClass("com.example.mplug.MainActivity");
-                startActivity(intent);
+                intent.setPackageName("com.example.mpluga");
+                intent.setmPlugnClass("com.example.mpluga.MainActivity");
+                startActivity(PlugLoginActivity.this, intent);
             }
         });
 
@@ -43,7 +43,7 @@ public class PlugLoginActivity extends BasePlugActivity {
                 DLIntent intent = new DLIntent();
                 intent.setPackageName("com.example.mplugb");
                 intent.setmPlugnClass("com.example.mplugb.PlugLoginBActivity");
-                startActivity(intent);
+                startActivity(PlugLoginActivity.this, intent);
             }
         });
 

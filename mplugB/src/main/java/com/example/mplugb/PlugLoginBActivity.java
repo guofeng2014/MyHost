@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.example.pluglibrary.BasePlugActivity;
+import com.example.pluglibrary.DLIntent;
 
 /**
  * create by guofeng
@@ -22,7 +23,10 @@ public class PlugLoginBActivity extends BasePlugActivity {
         findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                DLIntent intent = new DLIntent();
+                intent.setPackageName("com.example.mplugb");
+                intent.setmPlugnClass("com.example.mplugb.MainActivity");
+                startActivity(PlugLoginBActivity.this, intent);
             }
         });
     }

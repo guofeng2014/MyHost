@@ -27,12 +27,11 @@ import m.plug.itf.PlugItf;
  * date on 2019-09-25
  */
 public class BasePlugActivity extends Activity implements PlugItf {
-    public static final int FROM_INNER = 0;
-    public static final int FROM_EXTERN = 1;
 
     public static final String FROM = "FROM";
 
-    private int from = FROM_EXTERN;
+    //起到开关作用的,决定插件是否吧可以单独运行
+    private int from = DLConstants.DEFAULT_FROM;
 
     protected Activity that;
 
@@ -47,22 +46,32 @@ public class BasePlugActivity extends Activity implements PlugItf {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            from = savedInstanceState.getInt(FROM, FROM_INNER);
+            from = savedInstanceState.getInt(FROM, DLConstants.FROM_INNER);
         }
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onCreate(savedInstanceState);
         }
     }
 
 
-    //跳转到Activity
-    public void startActivity(DLIntent intent) {
-        DPlugManager.getInstance().startActivity(that, intent);
+    //跳转到指定的界面
+    public void startActivity(Context context, DLIntent dlIntent) {
+        try {
+            if (DLConstants.FROM_EXTERN == from) {
+                DPlugManager.getInstance().startActivity(that, dlIntent);
+            } else {
+                Intent intent = new Intent();
+                intent.setClassName(dlIntent.packageName, dlIntent.mPlugnClass);
+                context.startActivity(intent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void setContentView(View view) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.setContentView(view);
         } else {
             that.setContentView(view);
@@ -72,7 +81,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.setContentView(view, params);
         } else {
             that.setContentView(view, params);
@@ -82,7 +91,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public void setContentView(int layoutResID) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.setContentView(layoutResID);
         } else {
             that.setContentView(layoutResID);
@@ -91,7 +100,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public void addContentView(View view, ViewGroup.LayoutParams params) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.addContentView(view, params);
         } else {
             that.addContentView(view, params);
@@ -100,7 +109,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public <T extends View> T findViewById(int id) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.findViewById(id);
         } else {
             return that.findViewById(id);
@@ -109,7 +118,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public Intent getIntent() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getIntent();
         } else {
             return that.getIntent();
@@ -118,7 +127,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public ClassLoader getClassLoader() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getClassLoader();
         } else {
             return that.getClassLoader();
@@ -127,7 +136,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public Resources getResources() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getResources();
         } else {
             return that.getResources();
@@ -138,7 +147,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
     //============有问题========
     @Override
     public String getPackageName() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getPackageName();
         } else {//需要返回插件的包名称
             return mPackageName;
@@ -149,7 +158,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
     @NonNull
     @Override
     public LayoutInflater getLayoutInflater() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getLayoutInflater();
         } else {
             return that.getLayoutInflater();
@@ -159,7 +168,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
     @NonNull
     @Override
     public MenuInflater getMenuInflater() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getMenuInflater();
         } else {
             return that.getMenuInflater();
@@ -168,7 +177,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public SharedPreferences getSharedPreferences(String name, int mode) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getSharedPreferences(name, mode);
         } else {
             return that.getSharedPreferences(name, mode);
@@ -177,7 +186,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public Context getApplicationContext() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getApplicationContext();
         } else {
             return that.getApplicationContext();
@@ -186,7 +195,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public WindowManager getWindowManager() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getWindowManager();
         } else {
             return that.getWindowManager();
@@ -195,7 +204,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public Window getWindow() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getWindow();
         } else {
             return that.getWindow();
@@ -204,7 +213,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public Object getSystemService(@NonNull String name) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.getSystemService(name);
         } else {
             return that.getSystemService(name);
@@ -213,14 +222,14 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public void onStart() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onStart();
         }
     }
 
     @Override
     public void finish() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.finish();
         } else {
             that.finish();
@@ -229,49 +238,49 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public void onBackPressed() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onBackPressed();
         }
     }
 
     @Override
     public void onRestart() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onRestart();
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
     @Override
     public void onResume() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onResume();
         }
     }
 
     @Override
     public void onPause() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onPause();
         }
     }
 
     @Override
     public void onStop() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onStop();
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.onTouchEvent(event);
         }
         return false;
@@ -279,7 +288,7 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.onKeyUp(keyCode, event);
         }
         return false;
@@ -288,27 +297,27 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public void onWindowAttributesChanged(WindowManager.LayoutParams params) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onWindowAttributesChanged(params);
         }
     }
 
 
     public void onWindowFocusChanged(boolean hasFocus) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onWindowFocusChanged(hasFocus);
         }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return super.onCreateOptionsMenu(menu);
         }
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             return onOptionsItemSelected(item);
         }
         return false;
@@ -317,28 +326,28 @@ public class BasePlugActivity extends Activity implements PlugItf {
 
     @Override
     public void onDestroy() {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onDestroy();
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onSaveInstanceState(outState);
         }
     }
 
     @Override
     public void onNewIntent(Intent intent) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onNewIntent(intent);
         }
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (from == FROM_INNER) {
+        if (from == DLConstants.FROM_INNER) {
             super.onRestoreInstanceState(savedInstanceState);
         }
 

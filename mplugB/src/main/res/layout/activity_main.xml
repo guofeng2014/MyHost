@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_weight="1"
+        android:src="@android:drawable/ic_lock_idle_alarm"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <TextView
+            android:background="#FFC"
+            android:gravity="center"
+            android:text="F1"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:background="#FCF"
+            android:gravity="center"
+            android:text="F2"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:background="#FEF"
+            android:gravity="center"
+            android:text="F3"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:background="#FEA"
+            android:gravity="center"
+            android:text="F4"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>

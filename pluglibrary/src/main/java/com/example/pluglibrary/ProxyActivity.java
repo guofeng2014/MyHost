@@ -17,13 +17,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 
 import m.plug.itf.PlugItf;
 
 import static com.example.pluglibrary.BasePlugActivity.FROM;
-import static com.example.pluglibrary.BasePlugActivity.FROM_EXTERN;
+import static com.example.pluglibrary.DLConstants.FROM_EXTERN;
 
 /**
  * create by guofeng

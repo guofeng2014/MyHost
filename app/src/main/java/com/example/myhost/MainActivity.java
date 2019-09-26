@@ -2,7 +2,6 @@ package com.example.myhost;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -18,13 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.pluglibrary.DPlugManager;
-import com.example.pluglibrary.PlugPackage;
 import com.example.pluglibrary.ProxyActivity;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,42 +54,6 @@ public class MainActivity extends AppCompatActivity {
                 ProxyActivity.jump(MainActivity.this, packageInfo.packageName, defActivity);
             }
         });
-
-        //多开功能
-        findViewById(R.id.mMultifily).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createMulShortCutIcon();
-            }
-        });
-    }
-
-
-    //生成多个图标快捷键
-    private void createMulShortCutIcon() {
-
-        Map<String, PlugPackage> cache = DPlugManager.getInstance().getCache();
-        Iterator<String> iterator = cache.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            PlugPackage plugPackage = cache.get(key);
-            if (plugPackage == null) continue;
-
-            // 安装的Intent
-            Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-            // 快捷名称
-            shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, "插件哈哈");
-            // 快捷图标是否允许重复
-            Intent shortcutIntent = new Intent(Intent.ACTION_MAIN);
-            shortcutIntent.setClassName(plugPackage.packageName, plugPackage.defaultActivity);
-            shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-
-            Intent.ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.mipmap.ic_short);
-            shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
-            // 发送广播
-            sendBroadcast(shortcut);
-        }
 
     }
 
